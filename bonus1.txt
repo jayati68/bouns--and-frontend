@@ -1,0 +1,47 @@
+1. SQL Injection (SQLi) – The "Hacker's Backdoor"
+Imagine you have a login form where users enter their username and password. Now, a hacker comes along and enters something sneaky instead of a real username, like:
+
+' OR '1'='1
+
+How to Stop It?
+Instead of blindly trusting what users type, we tell the database:
+"Only accept this input if it follows strict rules."
+Use prepared statements, which prevent bad queries from running:
+
+const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+db.execute(query, [username, password]);  // Takes input safely
+
+This way, the database treats user input as data, not a sneaky command.
+
+2. Cross-Site Scripting (XSS) – The "Evil Pop-Up Trick"
+Let’s say your website lets users leave comments. If you don’t check what they’re typing, someone could write:
+
+<script>alert('Gotcha!');</script>
+
+When another user visits the page, this script runs, stealing their cookies, logging their keystrokes, or worse.
+This is XSS, and it’s how hackers take control of user sessions.
+
+How to Stop It?
+Sanitize user input – Clean up anything suspicious before showing it on your site.
+Use Content Security Policy (CSP) – This tells the browser to only allow trusted scripts.
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+
+
+3. Cross-Site Request Forgery (CSRF) – "The Sneaky Button Click"
+Imagine you’re logged into your online banking, and in another tab, you visit a shady website.
+That site secretly sends a request like this:
+
+<form action="https://bank.com/transfer" method="POST">
+    <input type="hidden" name="amount" value="1000">
+    <input type="hidden" name="to" value="hacker_account">
+</form>
+
+How to Stop It?
+Add a CSRF token – a secret key that only the real user has. The bank checks for this before accepting a request.
+Use SameSite cookies, so your browser refuses to send sensitive cookies from other websites.
+
+Example of checking a CSRF token:
+
+if request.form['csrf_token'] != session['csrf_token']:
+    abort(403)  # Reject the request!
